@@ -1,0 +1,9 @@
+echo "venv/
+__pycache__/
+*.pyc
+.env
+*.sqlite3
+media/
+staticfiles/
+" > .gitignore
+
