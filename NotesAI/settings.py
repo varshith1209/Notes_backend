@@ -14,6 +14,16 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+import environ
+import os
+
+env = environ.Env()
+
+# Load .env file
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
+
+# OpenAI API key
+OPENAI_API_KEY = env("OPENAI_API_KEY")
 
 
 # Quick-start development settings - unsuitable for production
@@ -38,7 +48,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'users'
+    'users',
+    'notes',
+    'django_celery_results',
+
+
 ]
 
 MIDDLEWARE = [
@@ -87,6 +101,20 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'NotesAI',
+#         'USER': 'postgres',
+#         'PASSWORD': 'varshith123',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+EMBEDDING_PROVIDER = "local"  # or "gemini" or "openai"
+
+GEMINI_API_KEY = ""
+OPENAI_API_KEY = ""  # can be empty
 
 
 # Password validation
@@ -129,3 +157,24 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# ------------------------
+# CELERY CONFIGURATION
+# ------------------------
+
+# Redis broker (Celery uses this to send tasks)
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"
+
+# Redis backend (Celery stores results/status here)
+CELERY_RESULT_BACKEND = "redis://127.0.0.1:6379/0"
+
+# Serialization formats
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+# Timezone (use your own)
+CELERY_TIMEZONE = "Asia/Kolkata"
+
+# Ensures tasks execute reliably
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes
